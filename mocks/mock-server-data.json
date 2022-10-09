@@ -1,0 +1,142 @@
+{
+  "api": {
+    "movieName": [
+      "Shrek",
+      "Toy Story",
+      "Monsters, Inc.",
+      "How to Train Your Dragon",
+      "Shark Tale"
+    ],
+    "movieDescription": [
+      "Shrek, an ogre, embarks on a journey with a donkey to rescue Princess Fiona from a vile lord and regain his swamp.",
+      "Andy's favourite toy, Woody, is worried that after Andy receives his birthday gift, a new toy called Buzz Lightyear, his importance may get reduced. He thus hatches a plan to eliminate Buzz.",
+      "In Monstropolis, best friends Sulley and Mike are the top scarers working at the Monsters, Inc. However, their lives are hugely disrupted when a human girl enters their world.",
+      "Hiccup, a Viking, must kill a dragon to mark his passage into manhood and be initiated into his tribe. However, he ends up doing the exact opposite by befriending a deadly dragon, Night Fury.",
+      "Underachiever Oscar is a pint-sized fish with grand aspirations. When mob-connected great white shark Frankie is accidentally killed, Oscar concocts a story with Frankie's peace-loving brother Lenny that it was he who murdered the shark. Suddenly hailed \"Sharkslayer\" by his aquatic brethren, Oscar has bigger fish to fry when Frankie's father, mob boss Don Lino, dispatches his henchmen to track down his son's killer."
+    ],
+    "genre": [
+      "comedy",
+      "family",
+      "comedy",
+      "family",
+      "comedy"
+    ],
+    "releaseYear": [
+      2001,
+      2009,
+      2002,
+      2010,
+      2010
+    ],
+    "previewVideoPath": [
+      "https://www.youtube.com/watch?v=_S7WEVLbQ-Y",
+      "https://www.youtube.com/watch?v=1TPuf-xFmWI&t=1s",
+      "https://www.youtube.com/watch?v=_S7WEVLbQ-Y",
+      "https://www.youtube.com/watch?v=1TPuf-xFmWI&t=1s",
+      "https://www.youtube.com/watch?v=_S7WEVLbQ-Y"
+    ],
+    "videoPath": [
+      "https://www.youtube.com/watch?v=_S7WEVLbQ-Y",
+      "https://www.youtube.com/watch?v=1TPuf-xFmWI&t=1s",
+      "https://www.youtube.com/watch?v=_S7WEVLbQ-Y",
+      "https://www.youtube.com/watch?v=1TPuf-xFmWI&t=1s",
+      "https://www.youtube.com/watch?v=_S7WEVLbQ-Y"
+    ],
+    "actors": [
+      [
+        "Mike Myers",
+        "Eddie Murphy"
+      ],
+      [
+        "Tom Hanks",
+        "Nathan Lane"
+      ],
+      [
+        "Billy Crystal",
+        "John Goodman"
+      ],
+      [
+        "Jay Baruchel",
+        "Gerard Butler"
+      ],
+      [
+        "Will Smith",
+        "Robert De Niro"
+      ]
+    ],
+    "director": [
+      "Andrew Adamson",
+      "John Lasseter",
+      "Pete Docter",
+      "Chris Sanders",
+      "Rob Letterman"
+    ],
+    "movieDuration": [
+      90,
+      105,
+      95,
+      96,
+      97
+    ],
+    "commentsAmount": [
+      30,
+      35,
+      40,
+      45,
+      50
+    ],
+    "user": [
+      {
+        "name" : "bebrik",
+        "email" : "bebrik@gmail.com",
+        "avatarPath": "bebrik.jpg",
+        "password": "bebrik1234"
+      },
+      {
+        "name" : "abobus",
+        "email" : "abobus@gmail.com",
+        "avatarPath": "abobus.jpg",
+        "password": "abobus1234"
+      },
+      {
+        "name" : "mudremistichnoderevo",
+        "email" : "mudremistichnoderevo@gmail.com",
+        "avatarPath": "mudremistichnoderevo.jpg",
+        "password": "mudremistichnoderevo1234"
+      },
+      {
+        "name" : "capybara",
+        "email" : "capybara@gmail.com",
+        "avatarPath": "capybara.jpg",
+        "password": "capybara1234"
+      },
+      {
+        "name" : "harold",
+        "email" : "harold@gmail.com",
+        "avatarPath": "harold.jpg",
+        "password": "harold1234"
+      }
+    ],
+    "posterPath": [
+      "poster1.jpg",
+      "poster2.jpg",
+      "poster3.jpg",
+      "poster4.jpg",
+      "poster5.jpg"
+    ],
+    "backgroundPath": [
+      "background1.jpg",
+      "background2.jpg",
+      "background3.jpg",
+      "background4.jpg",
+      "background5.jpg"
+    ],
+    "backgroundColor": [
+      "magenta",
+      "aquamarine",
+      "amber",
+      "scarlet",
+      "ivory"
+    ]
+  }
+}
