@@ -14,6 +14,7 @@ export default class HelpCommand implements CliCommandInterface {
             ${chalk.cyan('--version')}:                   ${chalk.magentaBright('# выводит информации о версии приложения. Версия приложения считывается из файла package.json')}
             ${chalk.cyan('--help')}:                      ${chalk.magentaBright('# выводит список и описание всех поддерживаемых аргументов.')}
             ${chalk.cyan('--import')} <path>:             ${chalk.magentaBright('# импортирует данные из *.tsv-файла')}
+            ${chalk.cyan('--generate')} <n> <path> <url>: ${chalk.magentaBright('# генерирует тестовые данные')}
         `);
   }
 }
