@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { isRightGenre, TMovie } from '../entities/movie.type.js';
 
 export const createMovie = (row: string): TMovie => {
@@ -51,3 +52,9 @@ export const createMovie = (row: string): TMovie => {
 
 export const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : '';
+
+
+export const createSHA256 = (line: string, salt: string): string => {
+  const shaHasher = crypto.createHmac('sha256', salt);
+  return shaHasher.update(line).digest('hex');
+};
