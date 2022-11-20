@@ -1,0 +1,812 @@
+openapi: 3.0.3
+info:
+  title: API сервер для демо-проекта «Что посмотреть».
+  description: |-
+    * Список ресурсов и маршрутов сервера «Что посмотреть».
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+tags:
+  - name: movies
+    description: Действия с фильмами.
+  - name: users
+    description: Действия с пользователем.
+  - name: comments
+    description: Действия с комментариями.
+
+paths:
+  /users/register:
+    post:
+      tags:
+        - users
+      description: Регистрирует нового пользователя.
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+
+      responses:
+        "201":
+          description: Пользователь зарегистрирован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+        "409":
+          description: Пользователь с таким email уже существует.
+
+
+  /users/login:
+    post:
+      tags:
+        - users
+      description: Авторизует пользователя на основе логина и пароля.
+
+      requestBody:
+        required: true
+        description: Логин и пароль пользователя.
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                login:
+                  type: string
+                  example: abc@gmail.com
+
+                password:
+                  type: string
+                  example: 12345
+
+      responses:
+        "200":
+          description: Успешно авторизован.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: wtw_session=abc12345; Path=/; HttpOnly
+
+        "403":
+          description: Неправильный логин или пароль.
+
+
+    get:
+      tags:
+        - users
+      description: Возвращает информацию по авторизованному пользователю.
+
+      parameters:
+        - in: cookie
+          name: wtw_session
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Успешно.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+
+  /users/logout:
+    delete:
+      tags:
+        - users
+      description: Выход из сеанса.
+
+      parameters:
+        - in: cookie
+          name: wtw_session
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "204":
+          description: Успешно.
+
+        "403":
+          description: Неверный токен.
+
+
+  /movies/create:
+    post:
+      tags:
+        - movies
+      description: Добавляет новый фильм.
+
+      requestBody:
+        description: Информация для добавления нового фильма.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createMovie'
+        required: true
+
+      responses:
+        "201":
+          description: Фильм добавлен.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+
+        "400":
+          description: Не удалось обработать запрос.
+
+
+  /movies/{movieId}:
+    get:
+      tags:
+        - movies
+      description: Получает детальную информацию по определенному фильму.
+
+      parameters:
+        - in: path
+          name: movieId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Идентификатор фильма.
+
+      responses:
+        "200":
+          description: Успешно.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+
+        "404":
+          description: Фильма с данным id не существует.
+
+    patch:
+      tags:
+        - movies
+      description: Редактирует карточку фильма, созданную пользователем.
+
+      parameters:
+        - in: path
+          name: movieId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Идентификатор фильма.
+
+      requestBody:
+        description: Полный набор информации о фильме.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateMovie'
+        required: true
+
+      responses:
+        "200":
+          description: Фильм обновлен.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+
+        "400":
+          description: Не удалось обработать запрос.
+
+        "404":
+          description: Фильма с данным id не существует.
+
+
+    delete:
+      tags:
+        - movies
+      description: Удаляет карточку фильма, созданную пользователем
+
+      parameters:
+        - in: path
+          name: movieId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Идентификатор фильма на удаление.
+
+      requestBody:
+        description: Идентификатор пользователя, пытающегося удалить фильм.
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+
+      responses:
+        "204":
+          description: Фильм успешно удален.
+
+        "404":
+          description: Фильма с данным id не существует.
+
+  /movies?limit=60&genre=comedy:
+    get:
+      tags:
+        - movies
+      description: Возвращает список фильмов.
+
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+
+        - in: query
+          name: genre
+          schema:
+            type: string
+            enum: [ comedy, crime, documentary, drama, horror, family, romance, scifi, thriller ]
+            example: comedy
+
+      responses:
+        "200":
+          description: Успешно.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/movieListItem'
+
+        "400":
+          description: Не удалось обработать запрос.
+
+
+  /movies/promo:
+    get:
+      tags:
+        - movies
+      description: Получение детальной информации по промо фильму.
+
+      responses:
+        "200":
+          description: Успешно. Детальная информация по промо фильму.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/movie'
+
+
+  /movies/to-watch:
+    get:
+      tags:
+        - movies
+      description: Возвращает список фильмов, добавленных к просмотру
+
+      requestBody:
+        description: Идентификатор пользователя, запрашивающего фильмы к просмотру.
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+
+              required:
+                - userId
+
+      responses:
+        "200":
+          description: Успешно.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/movieListItem'
+
+        "401":
+          description: Пользователь не авторизован.
+
+
+    post:
+      tags:
+        - movies
+      description: Добавляет фильм в список "К просмотру"
+
+      requestBody:
+        description: Идентификатор пользователя и идентификатор фильма.
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                  example: zxc123asd
+
+                movieId:
+                  type: string
+                  format: uuid
+                  example: qwe123zxc
+
+              required:
+                - userId
+                - movieId
+
+      responses:
+        "201":
+          description: Успешно.
+
+        "401":
+          description: Пользователь не авторизован.
+
+
+    delete:
+      tags:
+        - movies
+      description: Удаляет фильм из списка "К просмотру"
+
+      requestBody:
+        description: Идентификатор пользователя, Иbентификатор этого фильма.
+        content:
+          application/json:
+            schema:
+              type: object
+
+              properties:
+                userId:
+                  type: string
+                  format: uuid
+                  example: zxc123asd
+
+                movieId:
+                  type: string
+                  format: uuid
+                  example: qwe123zxc
+
+              required:
+                - userId
+                - movieId
+
+      responses:
+        "204":
+          description: Успешно.
+
+        "401":
+          description: Пользователь не авторизован.
+
+  /movies/{movieId}/comments:
+    get:
+      tags:
+        - comments
+      description: Возвращает список комментариев для определенного фильма.
+
+      parameters:
+        - in: path
+          name: movieId
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Идентификатор фильма.
+
+      responses:
+        "200":
+          description: Успешно.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+
+        "404":
+          description: Фильм с таким идентификатором не существует.
+
+
+  /comments:
+    post:
+      tags:
+        - comments
+      description: Добавляет новый комментарий к определенному фильму.
+
+      requestBody:
+        description: Идентификатор фильма и сам комментарий.
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/comment'
+                - type: object
+                  properties:
+                    movieId:
+                      type: string
+                      format: uuid
+                      example: zxc123
+                  required:
+                    - movieId
+
+      responses:
+        "200":
+          description: Успешно.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+
+        "400":
+          description: Не удалось обработать запрос.
+
+        "401":
+          description: Пользователь не авторизован.
+
+        "404":
+          description: Фильм с данным идентификатором не найден.
+
+
+components:
+  schemas:
+    createUser:
+      type: object
+
+      properties:
+        email:
+          type: string
+          example: abc@gmail.com
+
+        name:
+          type: string
+          example: ivan
+
+        password:
+          type: string
+          example: 12345
+
+    user:
+      type: object
+
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: zxc123qwe
+
+        email:
+          type: string
+          example: abc@gmail.com
+
+    createMovie:
+      type: object
+
+      properties:
+        movieName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Snatch
+
+        movieDescription:
+          type: string
+          minLength: 20
+          maxLength: 1024
+          example: описание
+
+        publishDate:
+          type: string
+          format: date-time
+          example: 2022-10-21
+
+        genre:
+          type: string
+          enum: [ comedy, crime, documentary, drama, horror, family, romance, scifi, thriller ]
+          example: crime
+
+        releaseYear:
+          type: integer
+          example: 2013
+
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 2013
+
+        previewVideoPath:
+          type: string
+          format: url
+          example: https://preview-path.com
+
+        videoPath:
+          type: string
+          format: url
+          example: https://move-path.com
+
+        actors:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          uniqueItems: true
+          example: [ Ivan Ivanov, Petr Petrov, Alexander Alexandrov ]
+
+        director:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Director Directorovich
+
+        movieDuration:
+          type: number
+          minimum: 0.1
+
+        user:
+          type: object
+          properties:
+
+            name:
+              type: string
+              example: Ivan
+
+            email:
+              type: string
+              example: abc@gmail.com
+
+            avatarPath:
+              type: string
+              example: avatar.jpg
+
+            password:
+              type: string
+              example: 12345
+
+        posterPath:
+          type: string
+          format: uri
+          pattern: ([^\s]+(\.jpg)$)
+          example: poster.jpg
+
+        backgroundPath:
+          type: string
+          format: uri
+          pattern: ([^\s]+(\.jpg)$)
+          example: background.jpg
+
+        backgroundColor:
+          type: string
+          example: magenta
+
+      required:
+        - movieName
+        - movieDescription
+        - publishDate
+        - genre
+        - releaseYear
+        - rating
+        - previewVideoPath
+        - videoPath
+        - actors
+        - director
+        - movieDuration
+        - user
+        - posterPath
+        - backgroundPath
+        - backgroundColor
+
+    movie:
+      type: object
+
+      properties:
+        movieName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Snatch
+
+        movieDescription:
+          type: string
+          minLength: 20
+          maxLength: 1024
+          example: описание
+
+        publishDate:
+          type: string
+          format: date-time
+          example: 2022-10-21
+
+        genre:
+          type: string
+          enum: [ comedy, crime, documentary, drama, horror, family, romance, scifi, thriller ]
+          example: crime
+
+        releaseYear:
+          type: integer
+          example: 2013
+
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 2013
+
+        previewVideoPath:
+          type: string
+          format: url
+          example: https://preview-path.com
+
+        videoPath:
+          type: string
+          format: url
+          example: https://move-path.com
+
+        actors:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          uniqueItems: true
+          example: [ Ivan Ivanov, Petr Petrov, Alexander Alexandrov ]
+
+        director:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Director Directorovich
+
+        movieDuration:
+          type: number
+          minimum: 0.1
+
+        user:
+          type: object
+          properties:
+
+            name:
+              type: string
+              example: Ivan
+
+            email:
+              type: string
+              example: abc@gmail.com
+
+            avatarPath:
+              type: string
+              example: avatar.jpg
+
+            password:
+              type: string
+              example: 12345
+
+        posterPath:
+          type: string
+          format: uri
+          pattern: ([^\s]+(\.jpg)$)
+          example: poster.jpg
+
+        backgroundPath:
+          type: string
+          format: uri
+          pattern: ([^\s]+(\.jpg)$)
+          example: background.jpg
+
+        backgroundColor:
+          type: string
+          example: magenta
+
+      required:
+        - movieName
+        - movieDescription
+        - publishDate
+        - genre
+        - releaseYear
+        - rating
+        - previewVideoPath
+        - videoPath
+        - actors
+        - director
+        - movieDuration
+        - user
+        - posterPath
+        - backgroundPath
+        - backgroundColor
+
+    updateMovie:
+      allOf:
+        - $ref: '#/components/schemas/createMovie'
+
+    movieListItem:
+      type: object
+
+      properties:
+        movieName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Snatch
+
+        publishDate:
+          type: string
+          format: date-time
+          example: 2022-10-21
+
+        genre:
+          type: string
+          enum: [ comedy, crime, documentary, drama, horror, family, romance, scifi, thriller ]
+          example: crime
+
+        previewVideoPath:
+          type: string
+          format: url
+          example: https://preview-path.com
+
+        user:
+          $ref: '#/components/schemas/user'
+
+        posterPath:
+          type: string
+          format: uri
+          pattern: ([^\s]+(\.jpg)$)
+          example: poster.jpg
+
+        commentsCount:
+          type: integer
+          minimum: 0
+          example: 10
+
+      required:
+        - title
+        - publishingDate
+        - genre
+        - previewPath
+        - user
+        - posterPath
+        - commentsCount
+
+
+    comment:
+      type: object
+
+      properties:
+        text:
+          type: string
+          minLength: 5
+          maxLength: 1024
+          example: text
+
+        rating:
+          type: integer
+          minimum: 0
+          maximum: 10
+          example: 10
+
+        publishingDate:
+          type: string
+          format: date-time
+          example: 2022-10-21
+
+        user:
+          $ref: '#/components/schemas/user'
+
+      required:
+        - text
+        - rating
+        - user
