@@ -1,7 +1,7 @@
 import { TUser } from '../../../entities/user.type.js';
 import { TGenre } from '../../../entities/movie.type.js';
 
-export default class CreateMovieDto {
+export default class MovieDto {
   public movieName!: string;
   public movieDescription!: string;
   public publishDate!: Date;

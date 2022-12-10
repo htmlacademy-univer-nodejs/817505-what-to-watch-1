@@ -15,7 +15,6 @@ export const createMovie = (row: string): TMovie => {
     actors,
     director,
     movieDuration,
-    commentsAmount,
     name,
     email,
     avatarPath,
@@ -37,7 +36,7 @@ export const createMovie = (row: string): TMovie => {
     actors: actors.split(','),
     director,
     movieDuration: parseFloat(movieDuration),
-    commentsAmount: parseFloat(commentsAmount),
+    commentsAmount: 0,
     user: {
       name,
       email,
