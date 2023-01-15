@@ -1,8 +1,8 @@
 import { TUser } from './user.type';
 
 export type TComment = {
-  commentText: string;
+  text: string;
   rating: number;
-  publishDate: Date;
-  commentAuthor: TUser;
+  publishingDate: number;
+  author: TUser;
 }

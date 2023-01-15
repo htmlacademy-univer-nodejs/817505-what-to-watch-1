@@ -17,6 +17,14 @@ import { UserEntity, UserModel } from './modules/user/user.entity.js';
 import { CommentServiceInterface } from './modules/comment/comment.service.interface.js';
 import CommentService from './modules/comment/comment.service.js';
 import { CommentEntity, CommentModel } from './modules/comment/comment.entity.js';
+import { MovieServiceInterface } from './modules/movie/movie.service.interface.js';
+import MovieService from './modules/movie/movie.service.js';
+import { MovieEntity, MovieModel } from './modules/movie/movie.entity.js';
+import { ControllerInterface } from './common/controller/controller.interface.js';
+import { ExceptionFilterInterface } from './common/errors/exception-filter.interface.js';
+import MovieController from './modules/movie/movie.controller.js';
+import ExceptionFilter from './common/errors/exception-filter.js';
+import UserController from './modules/user/user.controller.js';
 
 
 const applicationContainer = new Container();
@@ -26,8 +34,13 @@ applicationContainer.bind<ConfigInterface>(Component.ConfigInterface).to(ConfigS
 applicationContainer.bind<DatabaseInterface>(Component.DatabaseInterface).to(DatabaseService).inSingletonScope();
 applicationContainer.bind<UserServiceInterface>(Component.UserServiceInterface).to(UserService);
 applicationContainer.bind<types.ModelType<UserEntity>>(Component.UserModel).toConstantValue(UserModel);
+applicationContainer.bind<MovieServiceInterface>(Component.MovieServiceInterface).to(MovieService);
+applicationContainer.bind<types.ModelType<MovieEntity>>(Component.MovieModel).toConstantValue(MovieModel);
 applicationContainer.bind<CommentServiceInterface>(Component.CommentServiceInterface).to(CommentService);
 applicationContainer.bind<types.ModelType<CommentEntity>>(Component.CommentModel).toConstantValue(CommentModel);
+applicationContainer.bind<ControllerInterface>(Component.MovieController).to(MovieController).inSingletonScope();
+applicationContainer.bind<ExceptionFilterInterface>(Component.ExceptionFilterInterface).to(ExceptionFilter).inSingletonScope();
+applicationContainer.bind<ControllerInterface>(Component.UserController).to(UserController).inSingletonScope();
 
 const application = applicationContainer.get<Application>(Component.Application);
 await application.init();

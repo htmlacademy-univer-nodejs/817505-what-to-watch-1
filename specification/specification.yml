@@ -354,7 +354,7 @@ paths:
                 - movieId
 
       responses:
-        "201":
+        "204":
           description: Успешно.
 
         "401":

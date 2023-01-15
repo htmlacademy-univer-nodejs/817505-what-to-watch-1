@@ -10,7 +10,7 @@ import { LoggerInterface } from '../common/logger/logger.interface.js';
 
 export default class GenerateCommand implements CliCommandInterface {
   public readonly name = '--generate';
-  private initialData!: TMockData;
+  private initialData?: TMockData;
   private logger: LoggerInterface;
 
   constructor() {
@@ -19,7 +19,7 @@ export default class GenerateCommand implements CliCommandInterface {
 
   public async execute(...parameters:string[]): Promise<void> {
     const [count, filepath, url] = parameters;
-    const movieCount = Number.parseInt(count, 10);
+    const movieCount = parseInt(count, 10);
 
     try {
       this.initialData = await got.get(url).json();

@@ -17,7 +17,7 @@ export type TMovie = {
   actors: string[];
   director: string;
   movieDuration: number;
-  commentsAmount: number;
+  commentsCount: number;
   user: TUser;
   posterPath: string;
   backgroundPath: string;

@@ -5,20 +5,26 @@ convict.addFormats(validator);
 
 export type ConfigSchema = {
   PORT: number;
-  DB_HOST: string;
   SALT: string;
+  DB_HOST: string;
   DB_USER: string;
   DB_PASSWORD: string;
   DB_PORT: number;
   DB_NAME: string;
-}
+};
 
 export const configSchema = convict<ConfigSchema>({
   PORT: {
     doc: 'Port for incoming connections',
     format: 'port',
     env: 'PORT',
-    default: 4000
+    default: 4200
+  },
+  SALT: {
+    doc: 'Salt for password hash',
+    format: String,
+    env: 'SALT',
+    default: null
   },
   DB_HOST: {
     doc: 'IP address of the database server (MongoDB)',
@@ -26,23 +32,17 @@ export const configSchema = convict<ConfigSchema>({
     env: 'DB_HOST',
     default: '127.0.0.1'
   },
-  SALT: {
-    doc: 'Salt for password hash',
-    format: String,
-    env: 'SALT',
-    default: 'salt'
-  },
   DB_USER: {
     doc: 'Username to connect to the database (MongoDB)',
     format: String,
     env: 'DB_USER',
-    default: 'admin',
+    default: null,
   },
   DB_PASSWORD: {
     doc: 'Database connection password (MongoDB)',
     format: String,
     env: 'DB_PASSWORD',
-    default: 'test',
+    default: null,
   },
   DB_PORT: {
     doc: 'Port to connect to the database (MongoDB)',
@@ -54,6 +54,6 @@ export const configSchema = convict<ConfigSchema>({
     doc: 'Database name (MongoDB)',
     format: String,
     env: 'DB_NAME',
-    default: 'course-nodejs-wtw-db'
+    default: 'what-to-watch-db'
   }
 });

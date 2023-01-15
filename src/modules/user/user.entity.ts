@@ -18,25 +18,25 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
     this.name = data.name;
     this.email = data.email;
     this.avatarPath = data.avatarPath;
-    this.password = data.password;
   }
-
-  @prop({required: true, default: ''})
-  public name!: string;
 
   @prop({unique: true, required: true})
   public email!: string;
 
   @prop()
-  public avatarPath!: string;
+  public avatarPath?: string;
 
   @prop({required: true, default: ''})
-  public password!: string;
+  public name!: string;
 
-  @prop({ required: true, default: [] })
+  @prop({required: true, default: []})
   public moviesToWatch!: string[];
 
+  @prop({required: true, default: ''})
+  private password!: string;
+
   setPassword(password: string, salt: string) {
+    // checkPassword(password);
     this.password = createSHA256(password, salt);
   }
 

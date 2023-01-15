@@ -22,13 +22,13 @@ import { TMovie } from '../entities/movie.type.js';
 const DEFAULT_USER_PASSWORD = '123456';
 
 export default class ImportCommand implements CliCommandInterface {
-  public readonly name = '--import';
+  readonly name = '--import';
   private userService!: UserServiceInterface;
   private movieService!: MovieServiceInterface;
   private databaseService!: DatabaseInterface;
-  private logger: LoggerInterface;
   private salt!: string;
-  private config: ConfigInterface;
+  private readonly logger: LoggerInterface;
+  private readonly config: ConfigInterface;
 
   constructor() {
     this.onLine = this.onLine.bind(this);
@@ -44,18 +44,19 @@ export default class ImportCommand implements CliCommandInterface {
   private async saveMovie(movie: TMovie) {
     const user = await this.userService.findOrCreate({
       ...movie.user,
-      password: DEFAULT_USER_PASSWORD
+      password: process.env.DB_PASSWORD || DEFAULT_USER_PASSWORD
     }, this.salt);
 
     await this.movieService.create({
       ...movie,
-      user: user.id,
+      userId: user.id,
     });
   }
 
 
   private async onLine(line: string, resolve: () => void) {
     const movie = createMovie(line);
+    this.logger.info(`Created new movie: ${movie}`);
     await this.saveMovie(movie);
     resolve();
   }
@@ -74,11 +75,9 @@ export default class ImportCommand implements CliCommandInterface {
       this.config.get('DB_NAME')
     );
     this.salt = this.config.get('SALT');
-
     await this.databaseService.connect(uri);
 
     const fileReader = new TSVFileReader(filename.trim());
-
     fileReader.on('line', this.onLine);
     fileReader.on('end', this.onComplete);
 

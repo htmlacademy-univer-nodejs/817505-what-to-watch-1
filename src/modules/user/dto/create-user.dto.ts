@@ -1,6 +1,6 @@
 export default class CreateUserDto {
-  public name!: string;
   public email!: string;
-  public avatarPath!: string;
+  public name!: string;
   public password!: string;
+  public avatarPath?: string;
 }

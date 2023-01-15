@@ -29,7 +29,7 @@ export default class MovieService implements MovieServiceInterface {
     return this.movieModel.findByIdAndDelete(movieId);
   }
 
-  async getMovies(): Promise<DocumentType<MovieEntity>[]> {
+  async find(): Promise<DocumentType<MovieEntity>[]> {
     return this.movieModel.aggregate([
       {
         $lookup: {
@@ -55,7 +55,7 @@ export default class MovieService implements MovieServiceInterface {
   }
 
   async findByGenre(genre: string, limit?: number): Promise<DocumentType<MovieEntity>[]> {
-    return this.movieModel.find({ genre }, {}, { limit }).populate('user');
+    return this.movieModel.find({genre}, {}, {limit}).populate('user');
   }
 
   async findById(movieId: string): Promise<DocumentType<MovieEntity> | null> {
@@ -63,19 +63,19 @@ export default class MovieService implements MovieServiceInterface {
   }
 
   async findPromo(): Promise<DocumentType<MovieEntity> | null> {
-    return this.movieModel.findOne({ isPromo: true }).populate('user');
+    return this.movieModel.findOne({isPromo: true}).populate('user');
   }
 
   async increaseCommentsCount(movieId: string): Promise<void | null> {
-    return this.movieModel.findByIdAndUpdate(movieId, { $inc: { commentsCount: 1 } });
+    return this.movieModel.findByIdAndUpdate(movieId, {$inc: {commentsCount: 1}});
   }
 
   async updateMovieRating(movieId: string, newRating: number): Promise<void | null> {
-    const oldValues = await this.movieModel.findById(movieId).select('rating commentsAmount');
+    const oldValues = await this.movieModel.findById(movieId).select('rating commentsCount');
     const oldRating = oldValues?.['rating'] ?? 0;
-    const oldCommentsAmount = oldValues?.['commentsAmount'] ?? 0;
+    const oldCommentsCount = oldValues?.['commentsCount'] ?? 0;
     return this.movieModel.findByIdAndUpdate(movieId, {
-      rating: (oldRating * oldCommentsAmount + newRating) / (oldCommentsAmount + 1)
+      rating: (oldRating * oldCommentsCount + newRating) / (oldCommentsCount + 1)
     });
   }
 }

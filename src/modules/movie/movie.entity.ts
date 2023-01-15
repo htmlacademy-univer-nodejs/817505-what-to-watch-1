@@ -46,10 +46,13 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   public movieDuration!: number;
 
   @prop({default: 0})
-  public commentsAmount!: number;
+  public commentsCount!: number;
 
-  @prop({required: true, ref: UserEntity})
-  public user!: Ref<UserEntity>;
+  @prop({
+    ref: UserEntity,
+    required: true
+  })
+  public userId!: Ref<UserEntity>;
 
   @prop({required: true})
   public posterPath!: string;

@@ -7,26 +7,24 @@ import { Component } from '../../entities/component.type.js';
 
 @injectable()
 export default class ConfigService implements ConfigInterface {
-  private config: ConfigSchema;
-  private logger: LoggerInterface;
+  private readonly config: ConfigSchema;
 
-  constructor(@inject(Component.LoggerInterface) logger: LoggerInterface) {
-    this.logger = logger;
-
+  constructor(@inject(Component.LoggerInterface) private logger: LoggerInterface) {
     const parsedOutput = config();
 
     if (parsedOutput.error) {
-      throw new Error('Can\'t read .env file. Perhaps the file does not exists.');
+      throw new Error('Cannot read .env file.');
     }
 
     configSchema.load({});
     configSchema.validate({allowed: 'strict', output: this.logger.info});
 
     this.config = configSchema.getProperties();
-    this.logger.info('.env file found and successfully parsed!');
+
+    this.logger.info('.env file successfully parsed.');
   }
 
-  public get<T extends keyof ConfigSchema>(key: T) {
+  get<T extends keyof ConfigSchema>(key: T): ConfigSchema[T] {
     return this.config[key];
   }
 }
