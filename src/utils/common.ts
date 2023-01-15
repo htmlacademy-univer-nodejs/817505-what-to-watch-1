@@ -18,7 +18,6 @@ export const createMovie = (row: string): TMovie => {
     name,
     email,
     avatarPath,
-    password,
     posterPath,
     backgroundPath,
     backgroundColor,
@@ -36,12 +35,11 @@ export const createMovie = (row: string): TMovie => {
     actors: actors.split(','),
     director,
     movieDuration: parseFloat(movieDuration),
-    commentsAmount: 0,
+    commentsCount: 0,
     user: {
       name,
       email,
       avatarPath,
-      password,
     },
     posterPath,
     backgroundPath,
@@ -56,4 +54,10 @@ export const getErrorMessage = (error: unknown): string =>
 export const createSHA256 = (line: string, salt: string): string => {
   const shaHasher = crypto.createHmac('sha256', salt);
   return shaHasher.update(line).digest('hex');
+};
+
+export const checkPassword = (password: string) => {
+  if (password.length < 6 || password.length > 12) {
+    throw new Error('Password should be from 6 to 12 characters');
+  }
 };

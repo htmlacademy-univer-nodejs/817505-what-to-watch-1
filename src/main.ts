@@ -17,6 +17,9 @@ import { UserEntity, UserModel } from './modules/user/user.entity.js';
 import { CommentServiceInterface } from './modules/comment/comment.service.interface.js';
 import CommentService from './modules/comment/comment.service.js';
 import { CommentEntity, CommentModel } from './modules/comment/comment.entity.js';
+import { MovieServiceInterface } from './modules/movie/movie.service.interface.js';
+import MovieService from './modules/movie/movie.service.js';
+import { MovieEntity, MovieModel } from './modules/movie/movie.entity.js';
 
 
 const applicationContainer = new Container();
@@ -26,6 +29,8 @@ applicationContainer.bind<ConfigInterface>(Component.ConfigInterface).to(ConfigS
 applicationContainer.bind<DatabaseInterface>(Component.DatabaseInterface).to(DatabaseService).inSingletonScope();
 applicationContainer.bind<UserServiceInterface>(Component.UserServiceInterface).to(UserService);
 applicationContainer.bind<types.ModelType<UserEntity>>(Component.UserModel).toConstantValue(UserModel);
+applicationContainer.bind<MovieServiceInterface>(Component.MovieServiceInterface).to(MovieService);
+applicationContainer.bind<types.ModelType<MovieEntity>>(Component.MovieModel).toConstantValue(MovieModel);
 applicationContainer.bind<CommentServiceInterface>(Component.CommentServiceInterface).to(CommentService);
 applicationContainer.bind<types.ModelType<CommentEntity>>(Component.CommentModel).toConstantValue(CommentModel);
 

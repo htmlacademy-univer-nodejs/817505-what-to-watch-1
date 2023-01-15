@@ -1,4 +1,3 @@
-import { TUser } from '../../../entities/user.type.js';
 import { TGenre } from '../../../entities/movie.type.js';
 
 export default class MovieDto {
@@ -12,8 +11,9 @@ export default class MovieDto {
   public videoPath!: string;
   public actors!: string[];
   public director!: string;
-  public commentsAmount!: number;
-  public user!: TUser;
+  public movieDuration!: number;
+  public commentsCount!: number;
+  public userId!: string;
   public posterPath!: string;
   public backgroundPath!: string;
   public backgroundColor!: string;
