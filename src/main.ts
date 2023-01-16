@@ -25,6 +25,7 @@ import { ExceptionFilterInterface } from './common/errors/exception-filter.inter
 import MovieController from './modules/movie/movie.controller.js';
 import ExceptionFilter from './common/errors/exception-filter.js';
 import UserController from './modules/user/user.controller.js';
+import CommentController from './modules/comment/comment.controller.js';
 
 
 const applicationContainer = new Container();
@@ -41,6 +42,7 @@ applicationContainer.bind<types.ModelType<CommentEntity>>(Component.CommentModel
 applicationContainer.bind<ControllerInterface>(Component.MovieController).to(MovieController).inSingletonScope();
 applicationContainer.bind<ExceptionFilterInterface>(Component.ExceptionFilterInterface).to(ExceptionFilter).inSingletonScope();
 applicationContainer.bind<ControllerInterface>(Component.UserController).to(UserController).inSingletonScope();
+applicationContainer.bind<ControllerInterface>(Component.CommentController).to(CommentController).inSingletonScope();
 
 const application = applicationContainer.get<Application>(Component.Application);
 await application.init();
