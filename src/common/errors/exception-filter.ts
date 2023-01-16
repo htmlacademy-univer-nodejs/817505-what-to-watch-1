@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { Component } from '../../entities/component.type';
+import { Component } from '../../entities/component.type.js';
 import { LoggerInterface } from '../logger/logger.interface';
 import { ExceptionFilterInterface } from './exception-filter.interface';
 import { NextFunction, Request, Response } from 'express';

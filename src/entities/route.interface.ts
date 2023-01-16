@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { MiddlewareInterface } from './middleware.interface';
 
 export enum HttpMethod {
   Get = 'get',
@@ -12,4 +13,5 @@ export interface RouteInterface<Path extends string> {
   path: Path;
   method: HttpMethod;
   handler: (req: Request, res: Response, next: NextFunction) => void;
+  middlewares?: MiddlewareInterface[];
 }
