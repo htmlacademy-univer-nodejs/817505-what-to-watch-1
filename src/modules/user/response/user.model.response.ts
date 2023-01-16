@@ -5,10 +5,7 @@ export default class UserResponse {
   public email!: string;
 
   @Expose()
-  public firstname!: string;
-
-  @Expose()
-  public lastname!: string;
+  public name!: string;
 
   @Expose()
   public avatarPath?: string;

@@ -7,6 +7,8 @@ import { LoggerInterface } from '../../common/logger/logger.interface.js';
 import { Component } from '../../entities/component.type.js';
 import { MovieEntity } from '../movie/movie.entity';
 import CreateUserDto from './dto/create-user.dto.js';
+import LoginUserDto from './dto/login-user.dto.js';
+
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -42,7 +44,7 @@ export default class UserService implements UserServiceInterface {
 
   async findToWatch(userId: string): Promise<DocumentType<MovieEntity>[]> {
     const moviesToWatch = await this.userModel.findById(userId).select('moviesToWatch');
-    return this.movieModel.find({_id: { $in: moviesToWatch?.moviesToWatch }});
+    return this.movieModel.find({_id: { $in: moviesToWatch?.moviesToWatch }}).populate('user');
   }
 
   async addToWatch(movieId: string, userId: string): Promise<void | null> {
@@ -55,5 +57,21 @@ export default class UserService implements UserServiceInterface {
     return this.userModel.findByIdAndUpdate(userId, {
       $pull: {moviesToWatch: movieId}
     });
+  }
+
+  async findById(userId: string): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findById(userId);
+  }
+
+  async setUserAvatarPath(userId: string, avatarPath: string): Promise<void | null> {
+    return this.userModel.findByIdAndUpdate(userId, {avatarPath});
+  }
+
+  async verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null> {
+    const user = await this.findByEmail(dto.email);
+    if (user && user.verifyPassword(dto.password, salt)) {
+      return user;
+    }
+    return null;
   }
 }

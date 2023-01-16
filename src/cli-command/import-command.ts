@@ -47,10 +47,7 @@ export default class ImportCommand implements CliCommandInterface {
       password: process.env.DB_PASSWORD || DEFAULT_USER_PASSWORD
     }, this.salt);
 
-    await this.movieService.create({
-      ...movie,
-      userId: user.id,
-    });
+    await this.movieService.create(movie, user.id);
   }
 
 

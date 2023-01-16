@@ -1,5 +1,6 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { TGenre } from '../../../entities/movie.type';
+import UserResponse from '../../user/response/user.model.response.js';
 
 export default class MovieModelResponse {
   @Expose()
@@ -36,7 +37,10 @@ export default class MovieModelResponse {
   public movieDuration!: number;
 
   @Expose()
-  public userId!: string;
+  public commentsCount!: number;
+
+  @Type(() => UserResponse)
+  public user!: UserResponse;
 
   @Expose()
   public posterPath!: string;
