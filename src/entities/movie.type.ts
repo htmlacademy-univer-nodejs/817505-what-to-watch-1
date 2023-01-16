@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+import HttpError from '../common/errors/http-error.js';
 import { TUser } from './user.type';
 
 
@@ -35,4 +37,15 @@ export enum Genres {
   ROMANCE = 'romance',
   SCIFI = 'scifi',
   THRILLER = 'thriller'
+}
+
+export function getGenre(value: string): TGenre | never {
+  if (!GENRE.includes(value)) {
+    throw new HttpError(
+      StatusCodes.BAD_REQUEST,
+      `Unrecognised genre: ${value}.`,
+      'getGenre'
+    );
+  }
+  return value;
 }

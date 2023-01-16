@@ -6,6 +6,8 @@ import { Component } from '../../entities/component.type.js';
 import { CommentEntity } from './comment.entity.js';
 import { MovieServiceInterface } from '../movie/movie.service.interface.js';
 import CreateCommentDto from './dto/create-comment.dto.js';
+import { MAX_COMMENTS_COUNT } from './constants.js';
+
 
 @injectable()
 export default class CommentService implements CommentServiceInterface {
@@ -14,14 +16,15 @@ export default class CommentService implements CommentServiceInterface {
     @inject(Component.MovieServiceInterface) private readonly movieService: MovieServiceInterface
   ) { }
 
-  public async create(dto: CreateCommentDto): Promise<DocumentType<CommentEntity>> {
-    const comment = await this.commentModel.create(dto);
+  public async create(dto: CreateCommentDto, user: string): Promise<DocumentType<CommentEntity>> {
+    const comment = await this.commentModel.create({...dto, user});
     await this.movieService.updateMovieRating(dto.movieId, dto.rating);
     await this.movieService.increaseCommentsCount(dto.movieId);
     return comment.populate('user');
   }
 
   public async findByMovieId(movieId: string): Promise<DocumentType<CommentEntity>[]> {
-    return this.commentModel.find({ movieId }).populate('user');
+    const movieComments = await this.commentModel.find({movieId}).sort({createdAt: -1}).limit(MAX_COMMENTS_COUNT);
+    return this.commentModel.populate(movieComments, 'user');
   }
 }

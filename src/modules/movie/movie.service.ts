@@ -6,6 +6,7 @@ import { Component } from '../../entities/component.type.js';
 import { LoggerInterface } from '../../common/logger/logger.interface.js';
 import { MOVIE_DISPLAY_LIMIT } from './constants.js';
 import MovieDto from './dto/movie.dto';
+import { TGenre } from '../../entities/movie.type.js';
 
 @injectable()
 export default class MovieService implements MovieServiceInterface {
@@ -14,15 +15,15 @@ export default class MovieService implements MovieServiceInterface {
     @inject(Component.MovieModel) private readonly movieModel: types.ModelType<MovieEntity>
   ) {}
 
-  async create(dto: MovieDto): Promise<DocumentType<MovieEntity>> {
-    const movie = await this.movieModel.create(dto);
+  async create(dto: MovieDto, user: string): Promise<DocumentType<MovieEntity>> {
+    const movie = await this.movieModel.create({...dto, user});
     this.logger.info(`New movie created: ${dto.movieName}`);
 
     return movie;
   }
 
   async updateById(movieId: string, dto: MovieDto): Promise<DocumentType<MovieEntity> | null> {
-    return this.movieModel.findByIdAndUpdate(movieId, dto).populate('user');
+    return this.movieModel.findByIdAndUpdate(movieId, dto, {new: true}).populate('user');
   }
 
   async deleteById(movieId: string): Promise<void | null> {
@@ -30,17 +31,14 @@ export default class MovieService implements MovieServiceInterface {
   }
 
   async find(limit?: number): Promise<DocumentType<MovieEntity>[]> {
-    return this.movieModel.aggregate([
-      {
-        $addFields: {
-          id: { $toString: '$_id' }
-        }
-      },
-      { $limit: limit || MOVIE_DISPLAY_LIMIT }
+    const movies = await this.movieModel.aggregate([
+      {$sort: {publishingDate: 1}},
+      {$limit: limit || MOVIE_DISPLAY_LIMIT}
     ]);
+    return this.movieModel.populate(movies, 'user');
   }
 
-  async findByGenre(genre: string, limit?: number): Promise<DocumentType<MovieEntity>[]> {
+  async findByGenre(genre: TGenre, limit?: number): Promise<DocumentType<MovieEntity>[]> {
     return this.movieModel.find({genre}, {}, {limit}).populate('user');
   }
 
@@ -66,6 +64,6 @@ export default class MovieService implements MovieServiceInterface {
   }
 
   async exists(documentId: string): Promise<boolean> {
-    return (this.movieModel.exists({_id: documentId})) !== null;
+    return (await this.movieModel.exists({_id: documentId})) !== null;
   }
 }

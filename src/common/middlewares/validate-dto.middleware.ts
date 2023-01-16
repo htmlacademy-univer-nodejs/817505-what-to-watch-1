@@ -7,8 +7,8 @@ import { MiddlewareInterface } from '../../entities/middleware.interface';
 export class ValidateDtoMiddleware implements MiddlewareInterface {
   constructor(private readonly dto: ClassConstructor<object>) {}
 
-  public async execute({body}: Request, res: Response, next: NextFunction): Promise<void> {
-    const dtoInstance = plainToInstance(this.dto, body);
+  async execute(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const dtoInstance = plainToInstance(this.dto, req.body);
     const errors = await validate(dtoInstance);
 
     if (errors.length > 0) {

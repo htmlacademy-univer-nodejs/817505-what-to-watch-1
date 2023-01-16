@@ -26,13 +26,13 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
   @prop()
   public avatarPath?: string;
 
-  @prop({required: true, default: ''})
+  @prop({required: true})
   public name!: string;
 
   @prop({required: true, default: []})
   public moviesToWatch!: string[];
 
-  @prop({required: true, default: ''})
+  @prop({required: true})
   private password!: string;
 
   setPassword(password: string, salt: string) {
@@ -40,8 +40,8 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
     this.password = createSHA256(password, salt);
   }
 
-  getPassword() {
-    return this.password;
+  verifyPassword(password: string, salt: string) {
+    return createSHA256(password, salt) === this.password;
   }
 }
 

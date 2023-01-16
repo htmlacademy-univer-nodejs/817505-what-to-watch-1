@@ -1,6 +1,7 @@
 import typegoose, {defaultClasses, getModelForClass, Ref} from '@typegoose/typegoose';
 import { GENRE, TGenre } from '../../entities/movie.type.js';
 import { UserEntity } from '../user/user.entity.js';
+import { Types } from 'mongoose';
 
 const { prop, modelOptions } = typegoose;
 
@@ -49,10 +50,11 @@ export class MovieEntity extends defaultClasses.TimeStamps {
   public commentsCount!: number;
 
   @prop({
+    type: Types.ObjectId,
     ref: UserEntity,
     required: true
   })
-  public userId!: Ref<UserEntity>;
+  public user!: Ref<UserEntity>;
 
   @prop({required: true})
   public posterPath!: string;

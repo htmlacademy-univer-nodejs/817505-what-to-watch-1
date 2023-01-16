@@ -5,7 +5,7 @@ import {
   IsDateString,
   IsEnum,
   IsInt,
-  IsMongoId,
+  IsOptional,
   IsString,
   Length,
   Matches,
@@ -14,9 +14,11 @@ import {
 } from 'class-validator';
 
 export default class MovieDto {
+  @IsString({message: 'movieName is required'})
   @Length(2, 100, {message: 'length from 2 to 100 symbols'})
   public movieName!: string;
 
+  @IsString({message: 'movieDescription is required'})
   @Length(20, 1024, {message: 'length from 20 to 1024 symbols'})
   public movieDescription!: string;
 
@@ -47,9 +49,6 @@ export default class MovieDto {
   @Min(0, {message: 'movieDuration can not be less than 0'})
   public movieDuration!: number;
 
-  @IsMongoId({message: 'userId field must be valid an id'})
-  public userId!: string;
-
   @Matches(/(\S+(\.jpg)$)/, {message: 'posterPath must be .jpg format image'})
   @IsString({message: 'posterPath is required'})
   public posterPath!: string;
@@ -61,6 +60,7 @@ export default class MovieDto {
   @IsString({message: 'backgroundColor is required'})
   public backgroundColor!: string;
 
+  @IsOptional()
   @IsBoolean({message: 'isPromo should be boolean'})
   public isPromo?: boolean;
 }
