@@ -32,7 +32,7 @@ export default class Application {
 
   initMiddleware() {
     this.expressApp.use(express.json());
-    this.expressApp.use('/upload', express.static(this.config.get('STATIC_DIRECTORY')));
+    this.expressApp.use('/upload', express.static(this.config.get('UPLOAD_DIRECTORY')));
   }
 
   initExceptionFilters() {

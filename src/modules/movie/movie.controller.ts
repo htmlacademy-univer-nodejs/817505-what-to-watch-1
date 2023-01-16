@@ -15,10 +15,19 @@ import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-ob
 import { DocumentExistsMiddleware } from '../../common/middlewares/document-exists.middleware.js';
 import CommentResponse from '../comment/response/comment.model.response.js';
 import { HttpMethod } from '../../entities/route.interface.js';
+import { TGenre } from '../../entities/movie.type.js';
+import { DocumentType } from '@typegoose/typegoose/lib/types.js';
+import { MovieEntity } from './movie.entity.js';
+import MovieListItemResponse from './response /movie-item.model.response.js';
 
 type ParamsGetMovie = {
   movieId: string;
 }
+
+type QueryParamsGetMovies = {
+  limit?: number;
+  genre?: TGenre;
+};
 
 @injectable()
 export default class MovieController extends Controller {
@@ -29,6 +38,7 @@ export default class MovieController extends Controller {
 
     this.logger.info('Register routes for MovieController.');
 
+    this.addRoute<MovieRoute>({path: MovieRoute.PROMO, method: HttpMethod.Get, handler: this.showPromo});
     this.addRoute<MovieRoute>({path: MovieRoute.ROOT, method: HttpMethod.Get, handler: this.index});
     this.addRoute<MovieRoute>({
       path: MovieRoute.CREATE,
@@ -76,9 +86,15 @@ export default class MovieController extends Controller {
     });
   }
 
-  async index(_req: Request, res: Response): Promise<void> {
-    const movies = await this.movieService.find();
-    const movieResponse = fillDTO(MovieModelResponse, movies);
+  async index(req: Request<unknown, unknown, unknown, QueryParamsGetMovies>, res: Response): Promise<void> {
+    const { genre, limit } = req.query;
+    let movies: DocumentType<MovieEntity>[];
+    if (genre) {
+      movies = await this.movieService.findByGenre(genre, limit);
+    } else {
+      movies = await this.movieService.find(limit);
+    }
+    const movieResponse = fillDTO(MovieListItemResponse, movies);
     this.ok(res, movieResponse);
   }
 
