@@ -1,5 +1,17 @@
 import { Genres, TGenre } from '../../../entities/movie.type.js';
-import { IsArray, IsDateString, IsEnum, IsInt, IsMongoId, IsString, Length, Matches, Max, Min } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsMongoId,
+  IsString,
+  Length,
+  Matches,
+  Max,
+  Min
+} from 'class-validator';
 
 export default class MovieDto {
   @Length(2, 100, {message: 'length from 2 to 100 symbols'})
@@ -48,4 +60,7 @@ export default class MovieDto {
 
   @IsString({message: 'backgroundColor is required'})
   public backgroundColor!: string;
+
+  @IsBoolean({message: 'isPromo should be boolean'})
+  public isPromo?: boolean;
 }

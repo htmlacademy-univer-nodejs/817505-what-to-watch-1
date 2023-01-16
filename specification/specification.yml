@@ -291,10 +291,10 @@ paths:
                 $ref: '#/components/schemas/movie'
 
 
-  /movies/to-watch:
+  /users/to-watch:
     get:
       tags:
-        - movies
+        - users
       description: Возвращает список фильмов, добавленных к просмотру
 
       requestBody:
@@ -328,7 +328,7 @@ paths:
 
     post:
       tags:
-        - movies
+        - users
       description: Добавляет фильм в список "К просмотру"
 
       requestBody:
@@ -363,7 +363,7 @@ paths:
 
     delete:
       tags:
-        - movies
+        - users
       description: Удаляет фильм из списка "К просмотру"
 
       requestBody:

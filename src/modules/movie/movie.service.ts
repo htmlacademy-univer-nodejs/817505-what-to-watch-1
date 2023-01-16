@@ -29,28 +29,14 @@ export default class MovieService implements MovieServiceInterface {
     return this.movieModel.findByIdAndDelete(movieId);
   }
 
-  async find(): Promise<DocumentType<MovieEntity>[]> {
+  async find(limit?: number): Promise<DocumentType<MovieEntity>[]> {
     return this.movieModel.aggregate([
       {
-        $lookup: {
-          from: 'comments',
-          let: { movieId: '$_id' },
-          pipeline: [
-            { $match: { $expr: { $in: ['$$movieId', '$movies'] } } },
-            { $project: { _id: 1 } }
-          ],
-          as: 'comments'
-        },
-      },
-      {
         $addFields: {
-          id: { $toString: '$_id' },
-          commentsCount: { $size: '$comments' },
-          rating: { $avg: '$comments.rating' }
+          id: { $toString: '$_id' }
         }
       },
-      { $unset: 'comments' },
-      { $limit: MOVIE_DISPLAY_LIMIT }
+      { $limit: limit || MOVIE_DISPLAY_LIMIT }
     ]);
   }
 
