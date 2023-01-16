@@ -14,12 +14,16 @@ import { fillDTO } from '../../utils/common.js';
 import CommentResponse from './response/comment.model.response.js';
 import { HttpMethod } from '../../entities/route.interface.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
+import { ConfigInterface } from '../../common/config/config.interface.js';
+import { UserServiceInterface } from '../user/user.service.interface.js';
 
 export default class CommentController extends Controller {
   constructor(@inject(Component.LoggerInterface) logger: LoggerInterface,
+    @inject(Component.ConfigInterface) configService: ConfigInterface,
     @inject(Component.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
-    @inject(Component.MovieServiceInterface) private  readonly movieService: MovieServiceInterface) {
-    super(logger);
+    @inject(Component.MovieServiceInterface) private  readonly movieService: MovieServiceInterface,
+    @inject(Component.UserServiceInterface) private readonly userService: UserServiceInterface) {
+    super(logger, configService);
 
     this.logger.info('Register routes for CommentController.');
     this.addRoute<CommentRoute>({
@@ -27,7 +31,7 @@ export default class CommentController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new PrivateRouteMiddleware(),
+        new PrivateRouteMiddleware(this.userService),
         new ValidateDtoMiddleware(CreateCommentDto)
       ]
     });

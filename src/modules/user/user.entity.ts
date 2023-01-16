@@ -1,6 +1,7 @@
 import typegoose, { defaultClasses, getModelForClass } from '@typegoose/typegoose';
 import { TUser } from '../../entities/user.type.js';
-import { createSHA256 } from '../../utils/common.js';
+import { checkPassword, createSHA256 } from '../../utils/common.js';
+import { DEFAULT_AVATAR_FILE_NAME } from './constants.js';
 
 const { prop, modelOptions } = typegoose;
 
@@ -23,7 +24,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
   @prop({unique: true, required: true})
   public email!: string;
 
-  @prop()
+  @prop({default: DEFAULT_AVATAR_FILE_NAME})
   public avatarPath?: string;
 
   @prop({required: true})
@@ -36,7 +37,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements TUser {
   private password!: string;
 
   setPassword(password: string, salt: string) {
-    // checkPassword(password);
+    checkPassword(password);
     this.password = createSHA256(password, salt);
   }
 

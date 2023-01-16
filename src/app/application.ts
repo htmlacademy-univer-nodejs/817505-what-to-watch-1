@@ -9,6 +9,8 @@ import { ExceptionFilterInterface } from '../common/errors/exception-filter.inte
 import express, { Express } from 'express';
 import { getDbURI } from '../utils/db.js';
 import { AuthenticateMiddleware } from '../common/middlewares/authenticate.middleware.js';
+import cors from 'cors';
+import { getFullServerPath } from '../utils/common.js';
 
 
 @injectable()
@@ -35,7 +37,11 @@ export default class Application {
     this.expressApp.use(express.json());
     this.expressApp.use('/upload', express.static(this.config.get('UPLOAD_DIRECTORY')));
     const authenticateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
+    this.expressApp.use('/static', express.static(this.config.get('STATIC_DIRECTORY_PATH')));
+
     this.expressApp.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
+    this.expressApp.use(cors());
+
   }
 
   initExceptionFilters() {
@@ -43,8 +49,10 @@ export default class Application {
   }
 
   async init() {
-    this.logger.info(`Application initialized. Get value from $PORT: ${this.config.get('PORT')}.`);
     const port = this.config.get('PORT');
+    const host = this.config.get('HOST');
+
+    this.logger.info(`Application initialized. Get value from $PORT: ${port}.`);
 
     const uri = getDbURI(
       this.config.get('DB_USER'),
@@ -58,6 +66,6 @@ export default class Application {
     this.initMiddleware();
     this.initRoutes();
     this.initExceptionFilters();
-    this.expressApp.listen(port, () => this.logger.info(`Server started on http://localhost:${port}`));
+    this.expressApp.listen(port, () => this.logger.info(`Server started on ${getFullServerPath(host, port)}`));
   }
 }
