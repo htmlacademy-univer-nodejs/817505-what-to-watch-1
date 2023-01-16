@@ -16,7 +16,6 @@ import { ValidateDtoMiddleware } from '../../common/middlewares/validate-dto.mid
 import { ValidateObjectIdMiddleware } from '../../common/middlewares/validate-objectid.middleware.js';
 import { UploadFileMiddleware } from '../../common/middlewares/upload-file.middleware.js';
 import { HttpMethod } from '../../entities/route.interface.js';
-import { MultipartFromDataMiddleware } from '../../common/middlewares/multipart-form-data.middleware.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
 import LoggedUserModelResponse from './response/logged-user.model.response.js';
 import MovieListItemResponse from '../movie/response /movie-item.model.response.js';
@@ -24,9 +23,9 @@ import MovieListItemResponse from '../movie/response /movie-item.model.response.
 @injectable()
 export default class UserController extends Controller {
   constructor(@inject(Component.LoggerInterface) logger: LoggerInterface,
-    @inject(Component.UserServiceInterface) private readonly userService: UserServiceInterface,
-    @inject(Component.ConfigInterface) private readonly configService: ConfigInterface) {
-    super(logger);
+    @inject(Component.ConfigInterface) configService: ConfigInterface,
+    @inject(Component.UserServiceInterface) private readonly userService: UserServiceInterface) {
+    super(logger, configService);
     this.logger.info('Register routes for UserController.');
 
     this.addRoute<UserRoute>({
@@ -34,7 +33,7 @@ export default class UserController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new MultipartFromDataMiddleware(this.configService.get('UPLOAD_DIRECTORY')),
+        new UploadFileMiddleware('avatar', this.configService.get('UPLOAD_DIRECTORY')),
         new ValidateDtoMiddleware(CreateUserDto),
       ]
     });
@@ -49,19 +48,19 @@ export default class UserController extends Controller {
       path: UserRoute.TO_WATCH,
       method: HttpMethod.Get,
       handler: this.getToWatch,
-      middlewares: [new PrivateRouteMiddleware()]
+      middlewares: [new PrivateRouteMiddleware(this.userService)]
     });
     this.addRoute<UserRoute>({
       path: UserRoute.TO_WATCH,
       method: HttpMethod.Post,
       handler: this.postToWatch,
-      middlewares: [new PrivateRouteMiddleware()]
+      middlewares: [new PrivateRouteMiddleware(this.userService)]
     });
     this.addRoute<UserRoute>({
       path: UserRoute.TO_WATCH,
       method: HttpMethod.Delete,
       handler: this.deleteToWatch,
-      middlewares: [new PrivateRouteMiddleware()]
+      middlewares: [new PrivateRouteMiddleware(this.userService)]
     });
     this.addRoute<UserRoute>({
       path: UserRoute.AVATAR,
@@ -69,7 +68,7 @@ export default class UserController extends Controller {
       handler: this.uploadAvatar,
       middlewares: [
         new ValidateObjectIdMiddleware('userId'),
-        new UploadFileMiddleware( 'avatar', this.userService, this.configService.get('UPLOAD_DIRECTORY'))
+        new UploadFileMiddleware('avatar', this.configService.get('UPLOAD_DIRECTORY'))
       ]
     });
   }
@@ -86,7 +85,7 @@ export default class UserController extends Controller {
     const createdUser: UserResponse = result;
 
     if (req.file) {
-      const avatarPath = req.file.path.slice(1);
+      const avatarPath = req.file.filename;
       await this.userService.setUserAvatarPath(result.id, avatarPath);
       createdUser.avatarPath = avatarPath;
     }
@@ -111,6 +110,9 @@ export default class UserController extends Controller {
   }
 
   async get(req: Request, res: Response): Promise<void> {
+    if (!req.user) {
+      throw new HttpError(StatusCodes.UNAUTHORIZED, 'Unauthorized', 'UserController');
+    }
     const user = await this.userService.findByEmail(req.user.email);
     this.ok(res, fillDTO(LoggedUserModelResponse, user));
   }
@@ -134,11 +136,22 @@ export default class UserController extends Controller {
   }
 
   async uploadAvatar(req: Request, res: Response) {
-    const createdFilePath = req.file?.path;
-    if (createdFilePath) {
-      await this.userService.setUserAvatarPath(req.params.userId, createdFilePath);
+    const userId = req.params.userId;
+    const user = await this.userService.findById(userId);
+
+    if (!user) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        `User with id ${userId} doesn't exist`,
+        'UploadFileMiddleware'
+      );
+    }
+
+    if (req.file) {
+      const createdFileName = req.file.filename;
+      await this.userService.setUserAvatarPath(req.params.userId, createdFileName);
       this.created(res, {
-        filepath: createdFilePath
+        avatarPath: createdFileName
       });
     }
   }

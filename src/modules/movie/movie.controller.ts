@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { Controller } from '../../common/controller/controller.js';
 import { LoggerInterface } from '../../common/logger/logger.interface.js';
 import { Component } from '../../entities/component.type.js';
-import { MovieRoute } from './constants.js';
+import { DEFAULT_MOVIE_BACKGROUND_IMAGES, DEFAULT_MOVIE_POSTER_IMAGES, MovieRoute } from './constants.js';
 import { MovieServiceInterface } from './movie.service.interface.js';
 import { Request, Response } from 'express';
 import { fillDTO } from '../../utils/common.js';
@@ -22,6 +22,9 @@ import MovieListItemResponse from './response /movie-item.model.response.js';
 import { PrivateRouteMiddleware } from '../../common/middlewares/private-route.middleware.js';
 import HttpError from '../../common/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
+import { ConfigInterface } from '../../common/config/config.interface.js';
+import { UserServiceInterface } from '../user/user.service.interface.js';
+import { getRandomItem } from '../../utils/random.js';
 
 type ParamsGetMovie = {
   movieId: string;
@@ -35,9 +38,11 @@ type QueryParamsGetMovies = {
 @injectable()
 export default class MovieController extends Controller {
   constructor(@inject(Component.LoggerInterface) logger: LoggerInterface,
+    @inject(Component.ConfigInterface) configService: ConfigInterface,
     @inject(Component.MovieServiceInterface) private readonly movieService: MovieServiceInterface,
-    @inject(Component.CommentServiceInterface) private readonly commentService: CommentServiceInterface,) {
-    super(logger);
+    @inject(Component.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
+    @inject(Component.UserServiceInterface) private readonly userService: UserServiceInterface,) {
+    super(logger, configService);
 
     this.logger.info('Register routes for MovieController.');
 
@@ -48,7 +53,7 @@ export default class MovieController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new PrivateRouteMiddleware(),
+        new PrivateRouteMiddleware(this.userService),
         new ValidateDtoMiddleware(MovieDto)
       ]
     });
@@ -66,7 +71,7 @@ export default class MovieController extends Controller {
       method: HttpMethod.Patch,
       handler: this.update,
       middlewares: [
-        new PrivateRouteMiddleware(),
+        new PrivateRouteMiddleware(this.userService),
         new ValidateObjectIdMiddleware('movieId'),
         new ValidateDtoMiddleware(MovieDto),
         new DocumentExistsMiddleware(this.movieService, 'Movie', 'movieId')
@@ -77,7 +82,7 @@ export default class MovieController extends Controller {
       method: HttpMethod.Delete,
       handler: this.delete,
       middlewares: [
-        new PrivateRouteMiddleware(),
+        new PrivateRouteMiddleware(this.userService),
         new ValidateObjectIdMiddleware('movieId'),
         new DocumentExistsMiddleware(this.movieService, 'Movie', 'movieId')
       ]
@@ -109,7 +114,13 @@ export default class MovieController extends Controller {
 
   async create(req: Request<Record<string, unknown>, Record<string, unknown>, MovieDto>, res: Response): Promise<void> {
     const { body, user } = req;
-    const result = await this.movieService.create(body, user.id);
+    const randomPosterImage = getRandomItem(DEFAULT_MOVIE_POSTER_IMAGES);
+    const randomBackgroundImagePath = getRandomItem(DEFAULT_MOVIE_BACKGROUND_IMAGES);
+    const result = await this.movieService.create({
+      ...body,
+      posterPath: randomPosterImage,
+      backgroundPath: randomBackgroundImagePath
+    }, user.id);
     const movie = await this.movieService.findById(result.id);
     this.created(res, fillDTO(MovieModelResponse, movie));
   }
@@ -129,7 +140,13 @@ export default class MovieController extends Controller {
         'MovieController'
       );
     }
-    const result = await this.movieService.updateById(params.movieId, body);
+    const randomPosterImage = getRandomItem(DEFAULT_MOVIE_POSTER_IMAGES);
+    const randomBackgroundImagePath = getRandomItem(DEFAULT_MOVIE_BACKGROUND_IMAGES);
+    const result = await this.movieService.updateById(params.movieId, {
+      ...body,
+      posterPath: randomPosterImage,
+      backgroundPath: randomBackgroundImagePath
+    });
     this.ok(res, fillDTO(MovieModelResponse, result));
   }
 

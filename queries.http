@@ -133,7 +133,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFib2JhMUBnbWFpbC5jb20iLCJpZCI6IjYzYzU3OTQ3MTEyNWZkZjNiNTBhYmRmOSIsImlhdCI6MTY3Mzg4NjI1NSwiZXhwIjoxNjc0MDU5MDU1fQ.MYtgl8HhwGuy-aTrD_sUJYTSkQCEunzNcPfPg2bwNVY
 
 {
-  "text": "shrek cool",
+  "text": "shrek coolooss",
   "rating": 5,
   "movieId": "63c3f1a7e10f75724c49e8d3"
 }
@@ -174,10 +174,10 @@ POST http://localhost:4200/users/63c579471125fdf3b50abdf9/avatar HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="abobus"; filename="abobus.png"
+Content-Disposition: form-data; name="avatar"; filename="avatar.png"
 Content-Type: image/png
 
-< /Users/lvov/Desktop/photo_2022-09-15_18-47-28 (1).jpeg
+< /Users/lvov/Desktop/photo_2022-10-30_12-58-57.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ###
